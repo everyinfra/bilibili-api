@@ -79,13 +79,115 @@ Custom connectors in Claude on the web and desktop, and ChatGPT, accept only a U
 
 ### Fields
 
-The fields of each capability are documented on the English pages linked below.
+These are the fields that the 5 capabilities returned in our test. Each meaning is the first sentence of the field's entry in the API documentation. The link under each table has the full text.
 
-- `search`: <https://everyinfra.com/en/bilibili-api/search?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
-- `video`: <https://everyinfra.com/en/bilibili-api/video?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
-- `comments`: <https://everyinfra.com/en/bilibili-api/comments?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
-- `profile`: <https://everyinfra.com/en/bilibili-api/profile?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
-- `user_posts`: <https://everyinfra.com/en/bilibili-api/user_posts?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
+#### `search` (keyword search)
+
+| Field | Meaning |
+|---|---|
+| `id` | The record's unique ID on the platform. |
+| `url` | Link to the record on the platform. |
+| `title` | Title. null when the platform has no titles (for example text-only posts). |
+| `duration_seconds` | Duration in seconds. null for content that is not video or audio. |
+| `duration_text` | Duration as displayed text (for example 12:34). |
+| `view_count` | Views or plays. null means not disclosed, not 0. |
+| `like_count` | Likes. null means the platform or this capability does not disclose it; it is not 0. |
+| `comment_count` | Comments. null means not disclosed, not 0. |
+| `danmaku_count` | Danmaku (on-screen comment) count. **A Bilibili-specific engagement signal; read it alongside comment_count.** |
+| `favorite_count` | Favorites. |
+| `thumbnail_url` | Thumbnail link, lower resolution than image_url. |
+| `posted_at` | Publish time in ISO 8601, UTC (for example 2026-08-07T12:34:56+00:00). |
+| `category` | Category name in the platform's own taxonomy, not normalized across platforms. |
+| `author_name` | Author's display name. |
+| `author_id` | Author's unique ID on the platform. |
+| `author_url` | Link to the author's profile on the platform. |
+| `platform` | Source platform identifier, the same as platform in the request (for example xiaohongshu, tiktok). |
+| `text` | Body text with HTML removed, returned in full and never cut short (on a few platforms the list results themselves carry only an excerpt; the platform's field notes say so). |
+
+Other fields that the test returned: `duration_sec`.
+
+All parameters and fields: <https://everyinfra.com/en/bilibili-api/search?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
+
+#### `video` (video details)
+
+| Field | Meaning |
+|---|---|
+| `id` | The record's unique ID on the platform. |
+| `url` | Link to the record on the platform. |
+| `title` | Title. null when the platform has no titles (for example text-only posts). |
+| `text` | Body text with HTML removed, returned in full and never cut short (on a few platforms the list results themselves carry only an excerpt; the platform's field notes say so). |
+| `duration_seconds` | Duration in seconds. null for content that is not video or audio. |
+| `view_count` | Views or plays. null means not disclosed, not 0. |
+| `like_count` | Likes. null means the platform or this capability does not disclose it; it is not 0. |
+| `comment_count` | Comments. null means not disclosed, not 0. |
+| `danmaku_count` | Danmaku (on-screen comment) count. **A Bilibili-specific engagement signal; read it alongside comment_count.** |
+| `favorite_count` | Favorites. |
+| `coin_count` | Coins given. |
+| `share_count` | Shares. null means not disclosed, not 0. |
+| `thumbnail_url` | Thumbnail link, lower resolution than image_url. |
+| `posted_at` | Publish time in ISO 8601, UTC (for example 2026-08-07T12:34:56+00:00). |
+| `category` | Category name in the platform's own taxonomy, not normalized across platforms. |
+| `platform` | Source platform identifier, the same as platform in the request (for example xiaohongshu, tiktok). |
+| `tags` | Array of tags. |
+
+Other fields that the test returned: `duration_sec`.
+
+All parameters and fields: <https://everyinfra.com/en/bilibili-api/video?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
+
+#### `comments` (comments)
+
+| Field | Meaning |
+|---|---|
+| `id` | The record's unique ID on the platform. |
+| `text` | Body text with HTML removed, returned in full and never cut short (on a few platforms the list results themselves carry only an excerpt; the platform's field notes say so). |
+| `like_count` | Likes. null means the platform or this capability does not disclose it; it is not 0. |
+| `reply_count` | Replies, usually replies to a comment. null means not disclosed. |
+| `author_name` | Author's display name. |
+| `author_id` | Author's unique ID on the platform. |
+| `author_url` | Link to the author's profile on the platform. |
+| `posted_at` | Publish time in ISO 8601, UTC (for example 2026-08-07T12:34:56+00:00). |
+| `platform` | Source platform identifier, the same as platform in the request (for example xiaohongshu, tiktok). |
+
+Other fields that the test returned: `video_id`.
+
+All parameters and fields: <https://everyinfra.com/en/bilibili-api/comments?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
+
+#### `profile` (profile or object details)
+
+| Field | Meaning |
+|---|---|
+| `user_id` | User's unique ID on the platform. |
+| `name` | Name of the object itself, for account, product and business capabilities. |
+| `url` | Link to the record on the platform. |
+| `avatar_url` | Avatar image link. |
+| `is_verified` | Whether the platform verified the account. null means it cannot be determined. |
+| `platform` | Source platform identifier, the same as platform in the request (for example xiaohongshu, tiktok). |
+
+Other fields that the test returned: `gender`, `level`, `is_vip`, and `school`.
+
+All parameters and fields: <https://everyinfra.com/en/bilibili-api/profile?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
+
+#### `user_posts` (user content)
+
+| Field | Meaning |
+|---|---|
+| `id` | The record's unique ID on the platform. |
+| `url` | Link to the record on the platform. |
+| `title` | Title. null when the platform has no titles (for example text-only posts). |
+| `duration_seconds` | Duration in seconds. null for content that is not video or audio. |
+| `view_count` | Views or plays. null means not disclosed, not 0. |
+| `danmaku_count` | Danmaku (on-screen comment) count. **A Bilibili-specific engagement signal; read it alongside comment_count.** |
+| `thumbnail_url` | Thumbnail link, lower resolution than image_url. |
+| `posted_at` | Publish time in ISO 8601, UTC (for example 2026-08-07T12:34:56+00:00). |
+| `category` | Category name in the platform's own taxonomy, not normalized across platforms. |
+| `author_name` | Author's display name. |
+| `author_id` | Author's unique ID on the platform. |
+| `author_url` | Link to the author's profile on the platform. |
+| `platform` | Source platform identifier, the same as platform in the request (for example xiaohongshu, tiktok). |
+
+Other fields that the test returned: `duration_sec`.
+
+All parameters and fields: <https://everyinfra.com/en/bilibili-api/user_posts?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
 
 ### FAQ
 
