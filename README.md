@@ -1,6 +1,136 @@
-# B站 API（Bilibili API）
+# Bilibili API（B站 API）
 
-[中文](#中文) · [English](#english)
+[English](#english) · [中文](#中文)
+
+## English
+
+This repo reads public Bilibili data with Python or curl. You can search videos by keyword, read video details and comments, and look up an uploader's profile and videos. You need one EveryInfra API key. You do not need a Bilibili account or cookie. The same API also works as an MCP tool in Claude and Cursor. Billing is per call: these 5 capabilities cost $0.56 per 1,000 calls (about $0.00056 per call). Failed calls and empty results are not charged. The EveryInfra Bilibili API has 8 capabilities, all listed on the platform page: <https://everyinfra.com/en/bilibili-api?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
+
+### Quick start
+
+```bash
+git clone https://github.com/everyinfra/bilibili-api.git
+cd bilibili-api
+pip install -r requirements.txt
+export EVERYINFRA_API_KEY=<your API key>
+python main.py search 露营装备 --out videos.csv
+python main.py video "<video url>" --out video.json
+python main.py comments "<video url>" --out comments.csv
+python main.py user <user_id>
+python main.py posts <user_id> --out posts.csv
+```
+
+- Take the video link from the `url` field of a `search` result, for example https://www.bilibili.com/video/<BV id>.
+- For `user` and `posts`, use the `author_id` from a `search` result as `user_id`. It is the number in the uploader's page link space.bilibili.com/<mid>.
+- Without `--out`, the command prints the first 3 rows as JSON. With `--out`, it saves a .csv or .json file. The CSV has a BOM, so Excel opens it without garbled text.
+- Register at everyinfra.com, then create the API key in the console. Steps: <https://everyinfra.com/en/docs?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api#quickstart>
+
+### curl
+
+```bash
+curl -X POST https://api.everyinfra.com/api/v1/social \
+  -H "Authorization: Bearer $EVERYINFRA_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"platform":"bilibili","action":"search","params":{"keyword":"露营装备"}}'
+```
+
+All capabilities use the same URL. Change `action` and `params` to call another one. Examples for `video`, `comments`, `profile`, and `user_posts` are in [examples/curl.sh](examples/curl.sh).
+
+### Claude and Cursor (MCP)
+
+The remote MCP URL is <https://api.everyinfra.com/mcp>. Add the `Authorization: Bearer` header with your API key. EveryInfra runs the server, so you install no local program.
+
+Claude Code:
+
+```bash
+claude mcp add --transport http everyinfra https://api.everyinfra.com/mcp --header "Authorization: Bearer <API Key>"
+```
+
+Cursor and other clients that read `mcp.json` ([examples/mcp.json](examples/mcp.json)):
+
+```json
+{
+  "mcpServers": {
+    "everyinfra": {
+      "url": "https://api.everyinfra.com/mcp",
+      "headers": {
+        "Authorization": "Bearer <API Key>"
+      }
+    }
+  }
+}
+```
+
+Custom connectors in Claude on the web and desktop, and ChatGPT, accept only a URL. Enter <https://api.everyinfra.com/mcp/all>, sign in to EveryInfra when asked, and allow access. You do not need to enter a key. Full steps: <https://everyinfra.com/en/mcp-server?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
+
+### Price
+
+| `action` | Per 1,000 calls |
+|---|---|
+| `search` | $0.56 |
+| `video` | $0.56 |
+| `comments` | $0.56 |
+| `profile` | $0.56 |
+| `user_posts` | $0.56 |
+
+- Billing is per call, about $0.00056 each. Failed calls, empty results, parameter errors, and authentication failures are not charged.
+- A new account gets a $1 trial allowance, valid for 24 hours. No credit card is needed. How to claim it: <https://everyinfra.com/en/pricing?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
+- Prices for the other 3 Bilibili capabilities are on the platform page: <https://everyinfra.com/en/bilibili-api?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
+
+### Fields
+
+The fields of each capability are documented on the English pages linked below.
+
+- `search`: <https://everyinfra.com/en/bilibili-api/search?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
+- `video`: <https://everyinfra.com/en/bilibili-api/video?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
+- `comments`: <https://everyinfra.com/en/bilibili-api/comments?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
+- `profile`: <https://everyinfra.com/en/bilibili-api/profile?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
+- `user_posts`: <https://everyinfra.com/en/bilibili-api/user_posts?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
+
+### FAQ
+
+**Do I need a Bilibili account or cookie to call the API?**
+
+No. Send the `Authorization: Bearer` header with your API key. The request body holds `platform`, `action`, and the capability parameters. You do not scan a QR code, keep a login session, or open a browser.
+
+**How much does it cost? Are failed calls charged? Is there a free allowance?**
+
+Billing is per call, from $0.56 per 1,000 calls. Failed calls, empty results, parameter errors, and authentication failures are not charged. A new account gets a $1 trial allowance, valid for 24 hours. No credit card is needed. How to claim it: <https://everyinfra.com/en/pricing?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
+
+**Can I connect the Bilibili API to Claude or Cursor?**
+
+Yes. The remote MCP URL is <https://api.everyinfra.com/mcp>. Add the `Authorization: Bearer` header with your API key. You install no local program. Setup for Claude, Cursor, ChatGPT, and Claude Code: <https://everyinfra.com/en/mcp-server?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>. An agent can then search Bilibili content, read comments, and look up accounts by itself.
+
+**What legal points apply when I use Bilibili data?**
+
+The EveryInfra Terms of Service require you to make sure your use of the data follows applicable law and the terms of the relevant platform. Do not use the data for anything illegal or anything that violates privacy or intellectual property rights. Do not use bulk scraping for harassment, fraud, or other abuse. When you use personal information such as nicknames and avatars, keep only the fields your business needs.
+
+**Which Bilibili data can I get?**
+
+The EveryInfra Bilibili API has 8 capabilities:
+
+- keyword search
+- profile or object details
+- user content
+- video details
+- comments
+- on-screen video comments
+- subtitles
+- popular
+
+Parameters and return fields for each capability are on the platform page: <https://everyinfra.com/en/bilibili-api?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
+
+### Tested
+
+Before release, we ran the 5 commands in Quick start against the live API with this repo's code.
+
+| Command | Time (Singapore, UTC+8) | Rows | Charged |
+|---|---|---|---|
+| `python main.py search 露营装备 --out videos.csv` | 2026-11-21 09:24 | 20 | $0.000556 |
+| `python main.py video "<video url>" --out video.json` | 2026-11-21 09:24 | 1 | $0.000556 |
+| `python main.py comments "<video url>" --out comments.csv` | 2026-11-21 09:25 | 10 | $0.000556 |
+| `python main.py user <user_id>` | 2026-11-21 09:25 | 1 | $0.000556 |
+| `python main.py posts <user_id> --out posts.csv` | 2026-11-21 09:26 | 20 | $0.000556 |
 
 ## 中文
 
@@ -255,136 +385,6 @@ B站有 8 个能力：关键词搜索、主页或对象详情、用户内容、�
   "duration_sec": 376
 }
 ```
-
-## English
-
-This repo reads public Bilibili data with Python or curl. You can search videos by keyword, read video details and comments, and look up an uploader's profile and videos. You need one EveryInfra API key. You do not need a Bilibili account or cookie. The same API also works as an MCP tool in Claude and Cursor. Billing is per call: these 5 capabilities cost $0.56 per 1,000 calls (about $0.00056 per call). Failed calls and empty results are not charged. The EveryInfra Bilibili API has 8 capabilities, all listed on the platform page: <https://everyinfra.com/en/bilibili-api?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
-
-### Quick start
-
-```bash
-git clone https://github.com/everyinfra/bilibili-api.git
-cd bilibili-api
-pip install -r requirements.txt
-export EVERYINFRA_API_KEY=<your API key>
-python main.py search 露营装备 --out videos.csv
-python main.py video "<video url>" --out video.json
-python main.py comments "<video url>" --out comments.csv
-python main.py user <user_id>
-python main.py posts <user_id> --out posts.csv
-```
-
-- Take the video link from the `url` field of a `search` result, for example https://www.bilibili.com/video/<BV id>.
-- For `user` and `posts`, use the `author_id` from a `search` result as `user_id`. It is the number in the uploader's page link space.bilibili.com/<mid>.
-- Without `--out`, the command prints the first 3 rows as JSON. With `--out`, it saves a .csv or .json file. The CSV has a BOM, so Excel opens it without garbled text.
-- Register at everyinfra.com, then create the API key in the console. Steps: <https://everyinfra.com/en/docs?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api#quickstart>
-
-### curl
-
-```bash
-curl -X POST https://api.everyinfra.com/api/v1/social \
-  -H "Authorization: Bearer $EVERYINFRA_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"platform":"bilibili","action":"search","params":{"keyword":"露营装备"}}'
-```
-
-All capabilities use the same URL. Change `action` and `params` to call another one. Examples for `video`, `comments`, `profile`, and `user_posts` are in [examples/curl.sh](examples/curl.sh).
-
-### Claude and Cursor (MCP)
-
-The remote MCP URL is <https://api.everyinfra.com/mcp>. Add the `Authorization: Bearer` header with your API key. EveryInfra runs the server, so you install no local program.
-
-Claude Code:
-
-```bash
-claude mcp add --transport http everyinfra https://api.everyinfra.com/mcp --header "Authorization: Bearer <API Key>"
-```
-
-Cursor and other clients that read `mcp.json` ([examples/mcp.json](examples/mcp.json)):
-
-```json
-{
-  "mcpServers": {
-    "everyinfra": {
-      "url": "https://api.everyinfra.com/mcp",
-      "headers": {
-        "Authorization": "Bearer <API Key>"
-      }
-    }
-  }
-}
-```
-
-Custom connectors in Claude on the web and desktop, and ChatGPT, accept only a URL. Enter <https://api.everyinfra.com/mcp/all>, sign in to EveryInfra when asked, and allow access. You do not need to enter a key. Full steps: <https://everyinfra.com/en/mcp-server?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
-
-### Price
-
-| `action` | Per 1,000 calls |
-|---|---|
-| `search` | $0.56 |
-| `video` | $0.56 |
-| `comments` | $0.56 |
-| `profile` | $0.56 |
-| `user_posts` | $0.56 |
-
-- Billing is per call, about $0.00056 each. Failed calls, empty results, parameter errors, and authentication failures are not charged.
-- A new account gets a $1 trial allowance, valid for 24 hours. No credit card is needed. How to claim it: <https://everyinfra.com/en/pricing?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
-- Prices for the other 3 Bilibili capabilities are on the platform page: <https://everyinfra.com/en/bilibili-api?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
-
-### Fields
-
-The fields of each capability are documented on the English pages linked below.
-
-- `search`: <https://everyinfra.com/en/bilibili-api/search?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
-- `video`: <https://everyinfra.com/en/bilibili-api/video?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
-- `comments`: <https://everyinfra.com/en/bilibili-api/comments?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
-- `profile`: <https://everyinfra.com/en/bilibili-api/profile?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
-- `user_posts`: <https://everyinfra.com/en/bilibili-api/user_posts?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
-
-### FAQ
-
-**Do I need a Bilibili account or cookie to call the API?**
-
-No. Send the `Authorization: Bearer` header with your API key. The request body holds `platform`, `action`, and the capability parameters. You do not scan a QR code, keep a login session, or open a browser.
-
-**How much does it cost? Are failed calls charged? Is there a free allowance?**
-
-Billing is per call, from $0.56 per 1,000 calls. Failed calls, empty results, parameter errors, and authentication failures are not charged. A new account gets a $1 trial allowance, valid for 24 hours. No credit card is needed. How to claim it: <https://everyinfra.com/en/pricing?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
-
-**Can I connect the Bilibili API to Claude or Cursor?**
-
-Yes. The remote MCP URL is <https://api.everyinfra.com/mcp>. Add the `Authorization: Bearer` header with your API key. You install no local program. Setup for Claude, Cursor, ChatGPT, and Claude Code: <https://everyinfra.com/en/mcp-server?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>. An agent can then search Bilibili content, read comments, and look up accounts by itself.
-
-**What legal points apply when I use Bilibili data?**
-
-The EveryInfra Terms of Service require you to make sure your use of the data follows applicable law and the terms of the relevant platform. Do not use the data for anything illegal or anything that violates privacy or intellectual property rights. Do not use bulk scraping for harassment, fraud, or other abuse. When you use personal information such as nicknames and avatars, keep only the fields your business needs.
-
-**Which Bilibili data can I get?**
-
-The EveryInfra Bilibili API has 8 capabilities:
-
-- keyword search
-- profile or object details
-- user content
-- video details
-- comments
-- on-screen video comments
-- subtitles
-- popular
-
-Parameters and return fields for each capability are on the platform page: <https://everyinfra.com/en/bilibili-api?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
-
-### Tested
-
-Before release, we ran the 5 commands in Quick start against the live API with this repo's code.
-
-| Command | Time (Singapore, UTC+8) | Rows | Charged |
-|---|---|---|---|
-| `python main.py search 露营装备 --out videos.csv` | 2026-11-21 09:24 | 20 | $0.000556 |
-| `python main.py video "<video url>" --out video.json` | 2026-11-21 09:24 | 1 | $0.000556 |
-| `python main.py comments "<video url>" --out comments.csv` | 2026-11-21 09:25 | 10 | $0.000556 |
-| `python main.py user <user_id>` | 2026-11-21 09:25 | 1 | $0.000556 |
-| `python main.py posts <user_id> --out posts.csv` | 2026-11-21 09:26 | 20 | $0.000556 |
 
 ## License
 
