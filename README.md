@@ -89,6 +89,7 @@ These are the fields that the 5 capabilities returned in our test. Each meaning 
 | `url` | Link to the record on the platform. |
 | `title` | Title. null when the platform has no titles (for example text-only posts). |
 | `duration_seconds` | Duration in seconds. null for content that is not video or audio. |
+| `duration_sec` | Video length in seconds, the same value as duration_seconds (both names are returned); on video_parts it is the length of that one part, elsewhere a multi-part video gives the total of all parts. |
 | `duration_text` | Duration as displayed text (for example 12:34). |
 | `view_count` | Views or plays. null means not disclosed, not 0. |
 | `like_count` | Likes. null means the platform or this capability does not disclose it; it is not 0. |
@@ -104,8 +105,6 @@ These are the fields that the 5 capabilities returned in our test. Each meaning 
 | `platform` | Source platform identifier, the same as platform in the request (for example xiaohongshu, tiktok). |
 | `text` | Body text with HTML removed, returned in full and never cut short (on a few platforms the list results themselves carry only an excerpt; the platform's field notes say so). |
 
-Other fields that the test returned: `duration_sec`.
-
 All parameters and fields: <https://everyinfra.com/en/bilibili-api/search?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
 
 #### `video` (video details)
@@ -117,6 +116,7 @@ All parameters and fields: <https://everyinfra.com/en/bilibili-api/search?utm_so
 | `title` | Title. null when the platform has no titles (for example text-only posts). |
 | `text` | Body text with HTML removed, returned in full and never cut short (on a few platforms the list results themselves carry only an excerpt; the platform's field notes say so). |
 | `duration_seconds` | Duration in seconds. null for content that is not video or audio. |
+| `duration_sec` | Video length in seconds, the same value as duration_seconds (both names are returned); on video_parts it is the length of that one part, elsewhere a multi-part video gives the total of all parts. |
 | `view_count` | Views or plays. null means not disclosed, not 0. |
 | `like_count` | Likes. null means the platform or this capability does not disclose it; it is not 0. |
 | `comment_count` | Comments. null means not disclosed, not 0. |
@@ -129,8 +129,6 @@ All parameters and fields: <https://everyinfra.com/en/bilibili-api/search?utm_so
 | `category` | Category name in the platform's own taxonomy, not normalized across platforms. |
 | `platform` | Source platform identifier, the same as platform in the request (for example xiaohongshu, tiktok). |
 | `tags` | Array of tags. |
-
-Other fields that the test returned: `duration_sec`.
 
 All parameters and fields: <https://everyinfra.com/en/bilibili-api/video?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
 
@@ -146,9 +144,8 @@ All parameters and fields: <https://everyinfra.com/en/bilibili-api/video?utm_sou
 | `author_id` | Author's unique ID on the platform. |
 | `author_url` | Link to the author's profile on the platform. |
 | `posted_at` | Publish time in ISO 8601, UTC (for example 2026-08-07T12:34:56+00:00). |
+| `video_id` | BV number of the video. |
 | `platform` | Source platform identifier, the same as platform in the request (for example xiaohongshu, tiktok). |
-
-Other fields that the test returned: `video_id`.
 
 All parameters and fields: <https://everyinfra.com/en/bilibili-api/comments?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
 
@@ -160,10 +157,12 @@ All parameters and fields: <https://everyinfra.com/en/bilibili-api/comments?utm_
 | `name` | Name of the object itself, for account, product and business capabilities. |
 | `url` | Link to the record on the platform. |
 | `avatar_url` | Avatar image link. |
+| `gender` | Gender. |
+| `level` | User level (0–6). |
 | `is_verified` | Whether the platform verified the account. null means it cannot be determined. |
+| `is_vip` | Whether the user is a Big Member (Bilibili's paid membership). |
+| `school` | School. |
 | `platform` | Source platform identifier, the same as platform in the request (for example xiaohongshu, tiktok). |
-
-Other fields that the test returned: `gender`, `level`, `is_vip`, and `school`.
 
 All parameters and fields: <https://everyinfra.com/en/bilibili-api/profile?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
 
@@ -175,6 +174,7 @@ All parameters and fields: <https://everyinfra.com/en/bilibili-api/profile?utm_s
 | `url` | Link to the record on the platform. |
 | `title` | Title. null when the platform has no titles (for example text-only posts). |
 | `duration_seconds` | Duration in seconds. null for content that is not video or audio. |
+| `duration_sec` | Video length in seconds, the same value as duration_seconds (both names are returned); on video_parts it is the length of that one part, elsewhere a multi-part video gives the total of all parts. |
 | `view_count` | Views or plays. null means not disclosed, not 0. |
 | `danmaku_count` | Danmaku (on-screen comment) count. **A Bilibili-specific engagement signal; read it alongside comment_count.** |
 | `thumbnail_url` | Thumbnail link, lower resolution than image_url. |
@@ -184,8 +184,6 @@ All parameters and fields: <https://everyinfra.com/en/bilibili-api/profile?utm_s
 | `author_id` | Author's unique ID on the platform. |
 | `author_url` | Link to the author's profile on the platform. |
 | `platform` | Source platform identifier, the same as platform in the request (for example xiaohongshu, tiktok). |
-
-Other fields that the test returned: `duration_sec`.
 
 All parameters and fields: <https://everyinfra.com/en/bilibili-api/user_posts?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
 
@@ -321,6 +319,7 @@ Claude 网页版和桌面版的自定义连接器、ChatGPT 只能填网址：�
 | `url` | 该记录在原平台上的可访问链接。 |
 | `title` | 标题。 |
 | `duration_seconds` | 时长，单位秒。 |
+| `duration_sec` | 视频时长，单位秒，与 duration_seconds 同值（两个名字都返回）；video_parts 上是这一个分 P 的时长，其他能力上多 P 视频是全部分 P 的总时长。 |
 | `duration_text` | 时长的展示文本（如 12:34）。 |
 | `view_count` | 浏览/播放数。 |
 | `like_count` | 点赞数。 |
@@ -336,8 +335,6 @@ Claude 网页版和桌面版的自定义连接器、ChatGPT 只能填网址：�
 | `platform` | 数据来源平台标识，与请求里的 platform 一致（如 xiaohongshu、tiktok）。 |
 | `text` | 正文内容，已去除 HTML 标签，全文返回、不截断（个别平台的列表结果本身只有摘要，以该平台的字段说明为准）。 |
 
-实测还返回了 `duration_sec`，接口文档里还没有它的中文说明，表里没列。
-
 完整参数和字段：<https://everyinfra.com/bilibili-api/search?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
 
 #### `video`（视频详情）
@@ -349,6 +346,7 @@ Claude 网页版和桌面版的自定义连接器、ChatGPT 只能填网址：�
 | `title` | 标题。 |
 | `text` | 正文内容，已去除 HTML 标签，全文返回、不截断（个别平台的列表结果本身只有摘要，以该平台的字段说明为准）。 |
 | `duration_seconds` | 时长，单位秒。 |
+| `duration_sec` | 视频时长，单位秒，与 duration_seconds 同值（两个名字都返回）；video_parts 上是这一个分 P 的时长，其他能力上多 P 视频是全部分 P 的总时长。 |
 | `view_count` | 浏览/播放数。 |
 | `like_count` | 点赞数。 |
 | `comment_count` | 评论数。 |
@@ -361,8 +359,6 @@ Claude 网页版和桌面版的自定义连接器、ChatGPT 只能填网址：�
 | `category` | 分类名称，取值为原平台的分类体系，未做跨平台归一。 |
 | `platform` | 数据来源平台标识，与请求里的 platform 一致（如 xiaohongshu、tiktok）。 |
 | `tags` | 标签数组。 |
-
-实测还返回了 `duration_sec`，接口文档里还没有它的中文说明，表里没列。
 
 完整参数和字段：<https://everyinfra.com/bilibili-api/video?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
 
@@ -408,6 +404,7 @@ Claude 网页版和桌面版的自定义连接器、ChatGPT 只能填网址：�
 | `url` | 该记录在原平台上的可访问链接。 |
 | `title` | 标题。 |
 | `duration_seconds` | 时长，单位秒。 |
+| `duration_sec` | 视频时长，单位秒，与 duration_seconds 同值（两个名字都返回）；video_parts 上是这一个分 P 的时长，其他能力上多 P 视频是全部分 P 的总时长。 |
 | `view_count` | 浏览/播放数。 |
 | `danmaku_count` | 弹幕数。 |
 | `thumbnail_url` | 缩略图链接，分辨率低于 image_url。 |
@@ -417,8 +414,6 @@ Claude 网页版和桌面版的自定义连接器、ChatGPT 只能填网址：�
 | `author_id` | 作者在原平台的唯一 ID。 |
 | `author_url` | 作者在原平台的主页链接。 |
 | `platform` | 数据来源平台标识，与请求里的 platform 一致（如 xiaohongshu、tiktok）。 |
-
-实测还返回了 `duration_sec`，接口文档里还没有它的中文说明，表里没列。
 
 完整参数和字段：<https://everyinfra.com/bilibili-api/user_posts?utm_source=github&utm_medium=example_repo&utm_campaign=bilibili-api>
 
